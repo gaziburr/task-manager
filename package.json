@@ -1,26 +1,21 @@
 {
-  "name": "task-manager",
+  "name": "web-server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/gaziburr/task-manager.git"
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js -e js,hbs"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/gaziburr/task-manager/issues"
-  },
-  "homepage": "https://github.com/gaziburr/task-manager#readme",
   "dependencies": {
-    "mongod": "^2.0.0",
-    "mongodb": "^4.0.1",
-    "mongoose": "^5.13.5",
-    "validator": "^13.6.0"
+    "express": "^4.16.4",
+    "hbs": "^4.0.1",
+    "request": "^2.88.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.2.0"
   }
 }
