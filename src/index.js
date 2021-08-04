@@ -1,14 +1,16 @@
 const express = require('express');
-require('./db/mongoose');
-const User = require('./models/user');
+require('./db/mongoose');//To load the this index.js file after running mongoose.js(connecting to mongodb)
+const User = require('./models/user');//requiring mongoose User model
 const Task = require('./models/task');
-
+//creates an express application
 const app = express();
+// configuring port for heroku or local development
 const port = process.env.PORT || 3000;
-
+// parse all json to an object comming to express server
 app.use(express.json());
-
+// creating routes for storing new user to database 
 app.post('/users', async (req, res) => {
+//creating new instance of user model
   const user = new User(req.body);
 
   try {
@@ -21,13 +23,17 @@ app.post('/users', async (req, res) => {
 
 app.get('/users', async (req, res) => {
   try {
+   //getting all user from database
     const users = await User.find({});
+   //sending to the client
     res.send(users);
   } catch (e) {
+  //in case of Server specific error
     res.status(500).send();
   }
 });
 
+   //getting all user from database by id
 app.get('/users/:id', async (req, res) => {
   const _id = req.params.id;
 
@@ -43,14 +49,15 @@ app.get('/users/:id', async (req, res) => {
     res.status(500).send();
   }
 });
-
+ // routes for updating user by id
 app.patch('/users/:id', async (req, res) => {
-  const updates = Object.keys(req.body);
+
+   const updates = Object.keys(req.body);//creates array bringing all  priperties of Object
   const allowedUpdates = ['name', 'email', 'password', 'age'];
   const isValidOperation = updates.every(update =>
     allowedUpdates.includes(update),
   );
-
+//allowing users to update specific fields
   if (!isValidOperation) {
     return res.status(400).send({error: 'Invalid updates!'});
   }
@@ -70,7 +77,7 @@ app.patch('/users/:id', async (req, res) => {
     res.status(400).send(e);
   }
 });
-
+// routes for delete from database 
 app.delete('/users/:id', async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
@@ -162,6 +169,7 @@ app.delete('/tasks/:id', async (req, res) => {
   }
 });
 
+// Routes for app to run and listen on specific port 
 app.listen(port, () => {
   console.log('Server is up on port ' + port);
 });
