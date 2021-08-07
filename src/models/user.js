@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
+    unique: true,
     trim: true,
     lowercase: true,
     validate(value) {
@@ -40,11 +41,25 @@ const userSchema = new mongoose.Schema({
     },
   },
 });
+// userSchema.statics.findByEmailPasswordByGaziis accesible from User.findByEmailPasswordByGazi function in router file
+// creating custom function
+userSchema.statics.findByEmailPasswordByGazi = async (email, password) => {
+  const user = await User.findOne({email});
+  if (!user) {
+    throw new Error('Unable t8 find user');
+  }
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (!isMatch) {
+    throw new Error('Unable to login');
+  }
+  return user;
+};
 userSchema.pre('save', async function (next) {
- const user=this
- if(user.isModified('password')){
-  user.password=await bcrypt.hash(user.password,8)
- }
+  const user = this;
+  if (user.isModified('password')) {
+    user.password = await bcrypt.hash(user.password, 8);
+  }
   next();
 });
 const User = mongoose.model('User', userSchema);
