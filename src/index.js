@@ -1,10 +1,11 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
 //creates an express application
 require('./db/mongoose.js'); //To load the this index.js file after running mongoose.js(connecting to mongodb)
 
 const TaskRouter = require('./router/task');
 const UserRouter = require('./router/user'); //requiring mongoose User routes
-const app = express()
+const app = express();
 // confiuring port for heroku or local development
 const port = process.env.PORT || 3000;
 
@@ -13,6 +14,14 @@ app.use(express.json());
 app.use(TaskRouter);
 app.use(UserRouter);
 // Routes for app to run and listen on specific port
+//
+// const test= function(){
+// const userToken=jwt.sign({_id:"abc12344"},"thisisme")
+// const userToken=jwt.sign({_id:"abc12344"},"thisisme")
+// console.log(userToken)
+// }
+// test()
 app.listen(port, () => {
   console.log('Server is up on port ' + port);
 });
+

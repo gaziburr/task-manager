@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -41,8 +44,14 @@ const userSchema = new mongoose.Schema({
     },
   },
 });
-// userSchema.statics.findByEmailPasswordByGaziis accesible from User.findByEmailPasswordByGazi function in router file
 // creating custom function
+// userSchema.methods are accessible to specific and individual instance of User, sometimes called instance methods
+userSchema.methods.GeneratejwtByGazibur = async function (){
+const userToken=await jwt.sign({_id:this._id.toString()},"thisisme")
+ return userToken
+};
+// creating custom function
+// userSchema.statics are accessible to model, sometimes called model methods
 userSchema.statics.findByEmailPasswordByGazi = async (email, password) => {
   const user = await User.findOne({email});
   if (!user) {
