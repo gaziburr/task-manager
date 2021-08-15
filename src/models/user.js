@@ -43,19 +43,28 @@ const userSchema = new mongoose.Schema({
       }
     },
   },
+ tokens:[{
+  token:{
+   type:String,
+   require:true
+  }
+ }]
 });
 // creating custom function
 // userSchema.methods are accessible to specific and individual instance of User, sometimes called instance methods
 userSchema.methods.GeneratejwtByGazibur = async function (){
-const userToken=await jwt.sign({_id:this._id.toString()},"thisisme")
- return userToken
+ const user=this
+const token=await jwt.sign({_id:this._id.toString()},"thyg")
+ user.tokens=user.tokens.concat({token})
+ await user.save();
+ return token
 };
 // creating custom function
 // userSchema.statics are accessible to model, sometimes called model methods
 userSchema.statics.findByEmailPasswordByGazi = async (email, password) => {
   const user = await User.findOne({email});
   if (!user) {
-    throw new Error('Unable t8 find user');
+    throw new Error('Unable to find user');
   }
   const isMatch = await bcrypt.compare(password, user.password);
 

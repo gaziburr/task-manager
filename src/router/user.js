@@ -8,11 +8,13 @@ router.post('/users', async (req, res) => {
   const user = new User(req.body);
   try {
     await user.save();
+ await user.GeneratejwtByGazibur();
     res.status(201).send(user);
   } catch (e) {
     res.status(400).send(e);
   }
 });
+
 router.post('/users/login', async (req, res) => {
   try {
     //calling a custom function created in user model
@@ -20,17 +22,17 @@ router.post('/users/login', async (req, res) => {
       req.body.email,
       req.body.password,
     );
-
-    const authToken =await user.GeneratejwtByGazibur()
-console.log(authToken)
-    res.send({user,authToken});
+    const authToken = await user.GeneratejwtByGazibur();
+    console.log(authToken);
+    res.send({user, authToken});
   } catch (e) {
     console.log(e);
     res.status(404).send('Unable to login');
-    }
+  }
 });
-router.get('/users',async (req,res)=>{
- try{
+
+router.get('/users', async (req, res) => {
+  try {
     //getting all user from database
     const users = await User.find({});
     //sending to the client
@@ -48,7 +50,6 @@ router.get('/users/:id', async (req, res) => {
     if (!user) {
       return res.status(404).send();
     }
-   const userToken =GeneratejwtByGazibur()
     res.send(userToken);
   } catch (e) {
     res.status(500).send();

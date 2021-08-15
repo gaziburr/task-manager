@@ -9,18 +9,16 @@ const app = express();
 // confiuring port for heroku or local development
 const port = process.env.PORT || 3000;
 
+// our custom express middleware function
+app.use((req,res,next)=>{
+res.status(503).send("server is temporarily under maintenance")
+ next()
+})
+
 // parse all json to an object comming to express server
 app.use(express.json());
 app.use(TaskRouter);
 app.use(UserRouter);
-// Routes for app to run and listen on specific port
-//
-// const test= function(){
-// const userToken=jwt.sign({_id:"abc12344"},"thisisme")
-// const userToken=jwt.sign({_id:"abc12344"},"thisisme")
-// console.log(userToken)
-// }
-// test()
 app.listen(port, () => {
   console.log('Server is up on port ' + port);
 });
