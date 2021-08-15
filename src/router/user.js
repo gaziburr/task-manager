@@ -1,5 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const auth = require('../middleware/auth.js');
 const User = require('../models/user'); //requiring mongoose User model
 const router = new express.Router();
 // creating routes for storing new user to database
@@ -8,7 +9,7 @@ router.post('/users', async (req, res) => {
   const user = new User(req.body);
   try {
     await user.save();
- await user.GeneratejwtByGazibur();
+    await user.GeneratejwtByGazibur();
     res.status(201).send(user);
   } catch (e) {
     res.status(400).send(e);
@@ -31,27 +32,28 @@ router.post('/users/login', async (req, res) => {
   }
 });
 
-router.get('/users', async (req, res) => {
+router.get('/users/me', auth,async (req, res) => {
   try {
     //getting all user from database
-    const users = await User.find({});
+    const user = req.user
     //sending to the client
-    res.send(users);
+    res.send(user);
   } catch (e) {
     //in case of Server specific error
     res.status(500).send();
   }
 });
 //getting all user from database by id
-router.get('/users/:id', async (req, res) => {
+router.get('/users/:id', auth, async (req, res) => {
   const _id = req.params.id;
   try {
     const user = await User.findById(_id);
     if (!user) {
       return res.status(404).send();
     }
-    res.send(userToken);
+      return res.status(201).send(user);
   } catch (e) {
+    console.log(e);
     res.status(500).send();
   }
 });
@@ -77,6 +79,7 @@ router.patch('/users/:id', async (req, res) => {
     }
     res.status(201).send(user);
   } catch (e) {
+    console.log(e);
     res.status(400).send(e);
   }
 });
@@ -89,6 +92,7 @@ router.delete('/users/:id', async (req, res) => {
     }
     res.send(user);
   } catch (e) {
+    console.log(e);
     res.status(500).send();
   }
 });

@@ -54,7 +54,7 @@ const userSchema = new mongoose.Schema({
 // userSchema.methods are accessible to specific and individual instance of User, sometimes called instance methods
 userSchema.methods.GeneratejwtByGazibur = async function (){
  const user=this
-const token=await jwt.sign({_id:this._id.toString()},"thyg")
+const token=await jwt.sign({_id:user._id.toString()},'Waalaikumas')
  user.tokens=user.tokens.concat({token})
  await user.save();
  return token
