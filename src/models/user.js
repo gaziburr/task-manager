@@ -52,13 +52,26 @@ const userSchema = new mongoose.Schema({
 });
 // creating custom function
 // userSchema.methods are accessible to specific and individual instance of User, sometimes called instance methods
-userSchema.methods.getuserProfile=function(){
+// When a Mongoose document is passed to res.send(),Behind the scenes, Mongoose converts the object into JSON. We can customize this by adding toJSON as a method on the object.
+userSchema.methods.toJSON=function(){
  const user=this
  const userObject=user.toObject()
  delete userObject.password
  delete userObject.tokens
+ delete userObject.__v
  return userObject
 }
+// You can make sense why 'toJSON' Works like this, by testing this example:----
+// 
+// const pet={
+ // name:'tommy'
+// }
+// pet.toJSON=function(){
+ // console.log(this)
+ // return this
+// }
+// console.log(JSON.stringify(pet))
+
 userSchema.methods.GeneratejwtByGazibur = async function () {
   const user = this;
   const token = await jwt.sign({_id: user._id.toString()}, 'Waalaikumas');
@@ -74,7 +87,6 @@ userSchema.statics.findByEmailPasswordByGazi = async (email, password) => {
     throw new Error('Unable to find user');
   }
   const isMatch = await bcrypt.compare(password, user.password);
-
   if (!isMatch) {
     throw new Error('Unable to login')
   }

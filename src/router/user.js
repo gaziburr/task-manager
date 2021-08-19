@@ -49,7 +49,7 @@ router.get('/users/me', auth, async (req, res) => {
     //getting all user from database
     const user = req.user;
     //sending to the client
-    res.send(user.getuserProfile());
+    res.send(user);
   } catch (e) {
     //in case of Server specific error
     res.status(500).send();
