@@ -3,8 +3,6 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-
-
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -43,21 +41,30 @@ const userSchema = new mongoose.Schema({
       }
     },
   },
- tokens:[{
-  token:{
-   type:String,
-   require:true
-  }
- }]
+  tokens: [
+    {
+      token: {
+        type: String,
+        require: true,
+      },
+    },
+  ],
 });
 // creating custom function
 // userSchema.methods are accessible to specific and individual instance of User, sometimes called instance methods
-userSchema.methods.GeneratejwtByGazibur = async function (){
+userSchema.methods.getuserProfile=function(){
  const user=this
-const token=await jwt.sign({_id:user._id.toString()},'Waalaikumas')
- user.tokens=user.tokens.concat({token})
- await user.save();
- return token
+ const userObject=user.toObject()
+ delete userObject.password
+ delete userObject.tokens
+ return userObject
+}
+userSchema.methods.GeneratejwtByGazibur = async function () {
+  const user = this;
+  const token = await jwt.sign({_id: user._id.toString()}, 'Waalaikumas');
+  user.tokens = user.tokens.concat({token});
+  await user.save();
+  return token;
 };
 // creating custom function
 // userSchema.statics are accessible to model, sometimes called model methods
@@ -69,7 +76,7 @@ userSchema.statics.findByEmailPasswordByGazi = async (email, password) => {
   const isMatch = await bcrypt.compare(password, user.password);
 
   if (!isMatch) {
-    throw new Error('Unable to login');
+    throw new Error('Unable to login')
   }
   return user;
 };

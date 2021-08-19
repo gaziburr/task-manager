@@ -1,6 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const auth = require('../middleware/auth.js');
+const auth = require('../middleware/auth');
 const User = require('../models/user'); //requiring mongoose User model
 const router = new express.Router();
 // creating routes for storing new user to database
@@ -18,7 +18,7 @@ router.post('/users', async (req, res) => {
 
 router.post('/users/login', async (req, res) => {
   try {
-    //calling a custom function created in user model
+    // calling a custom function created in user model
     const user = await User.findByEmailPasswordByGazi(
       req.body.email,
       req.body.password,
@@ -28,19 +28,45 @@ router.post('/users/login', async (req, res) => {
     res.send({user, authToken});
   } catch (e) {
     console.log(e);
-    res.status(404).send('Unable to login');
+    res.status(404).send(' Authontication Failed');
   }
 });
-
-router.get('/users/me', auth,async (req, res) => {
+// router.get('/users', async (req, res) => {
+  // try {
+    // getting all user from database
+    // const user = await User.find({});
+    // sending to the client
+    // res.status(200).send(user);
+  // } catch (e) {
+    // console.log(e);
+    // in case of Server specific error
+    // res.status(500).send();
+  // }
+// });
+// 
+router.get('/users/me', auth, async (req, res) => {
   try {
     //getting all user from database
-    const user = req.user
+    const user = req.user;
     //sending to the client
-    res.send(user);
+    res.send(user.getuserProfile());
   } catch (e) {
     //in case of Server specific error
     res.status(500).send();
+  }
+});
+router.post('/users/Logout', auth, async (req, res) => {
+  try {
+   console.log()
+    req.user.tokens = req.user.tokens.filter(token => {
+      return token.token !== req.token;
+    });
+   await req.user.save()
+    res.send({messsage: 'Logout Successfull',user:req.user});
+  } catch (e) {
+    console.log(e);
+    //in case of Server specific error
+    res.status(500).send('Log not out !');
   }
 });
 //getting all user from database by id
@@ -51,14 +77,14 @@ router.get('/users/:id', auth, async (req, res) => {
     if (!user) {
       return res.status(404).send();
     }
-      return res.status(201).send(user);
+    return res.status(201).send(user);
   } catch (e) {
     console.log(e);
     res.status(500).send();
   }
 });
 // routes for updating user by id
-router.patch('/users/:id', async (req, res) => {
+router.patch('/users/:id', auth, async (req, res) => {
   const updates = Object.keys(req.body); //creates array bringing all  priperties of Object
   const allowedUpdates = ['name', 'email', 'password', 'age'];
   const isValidOperation = updates.every(update =>
@@ -83,8 +109,8 @@ router.patch('/users/:id', async (req, res) => {
     res.status(400).send(e);
   }
 });
-// routes for delete from database
-router.delete('/users/:id', async (req, res) => {
+// routes for delete users from database
+router.delete('/users/:id', auth, async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
     if (!user) {
