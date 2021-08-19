@@ -13,8 +13,7 @@ const auth = async (req, res, next) => {
 
     next();
   } catch (e) {
-    console.log(e);
-    res.status(400).send('Please authentiate');
+    res.status(400).send('Please authenticate');
   }
 };
 module.exports = auth;
