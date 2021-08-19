@@ -8,6 +8,7 @@ const auth = async (req, res, next) => {
     if (!user) {
       throw new Error();
     }
+   // setting user,token to req so that necessary user routes can usee 
     req.user = user;
     req.token = token;
 
